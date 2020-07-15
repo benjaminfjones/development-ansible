@@ -1,0 +1,41 @@
+# Install python dependencies
+- name: Install neovim python dependencies
+  apt:
+    name:
+      - software-properties-common
+      - python-dev
+      - python-pip
+      - python3-dev
+      - python3-pip
+    state: present
+
+  become: true
+  become_user: root
+
+# Install neovim from ppa
+- block:
+    - name: Add neovim ppa
+      apt_repository:
+        repo: ppa:neovim-ppa/unstable
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install neovim from ppa
+      apt:
+        name: neovim
+
+    - name: use nvim for vi
+      alternatives: name=vi path=/usr/bin/nvim
+    - name: use nvim for vim
+      alternatives: name=vim path=/usr/bin/nvim
+    - name: use nvim for editor
+      alternatives: name=editor path=/usr/bin/nvim
+
+  become: true
+  become_user: root
+
+- name: Install python neovim plugin
+  pip:
+    name: neovim
+    executable: pip3
+    extra_args: --user

@@ -1,0 +1,49 @@
+# Install dotfiles repo
+
+- block:
+  - name: check dotfiles repo directory
+    stat:
+      path: ~/dotfiles
+    register: dotfiles_path
+
+  - name: clone dotfiles repo
+    git:
+      repo: https://github.com/benjaminfjones/dotfiles
+      dest: ~/dotfiles
+      depth: 1
+      version: stable-20200714
+    when: not dotfiles_path.stat.exists
+
+  - name: boot dotfiles
+    command:
+      cmd: bash boot.sh
+      chdir: ~/dotfiles
+    when: not dotfiles_path.stat.exists
+
+  - name: copy gitconfig
+    copy:
+      src: gitconfig
+      dest: ~/.gitconfig
+      owner: ubuntu
+      group: ubuntu
+      mode: 0644
+
+  - name: copy zshrc_local
+    copy:
+      src: zshrc_local
+      dest: ~/.zshrc_local
+      owner: ubuntu
+      group: ubuntu
+      mode: 0644
+
+  - name: ensure zsh installed in /usr/bin
+    stat:
+      path: /usr/bin/zsh
+    register: zsh_path
+  - name: set users shell to zsh
+    user:
+      name: ubuntu
+      shell: /usr/bin/zsh
+    become: true
+    become_user: root
+    when: zsh_path.stat.exists

@@ -1,0 +1,54 @@
+# Install basic system tools
+
+- name: Install basic system tools
+  apt:
+    name:
+      - zsh
+      - curl
+      - git
+      - build-essential
+      - tmux
+      - openssh-client
+      - unzip
+      - file
+      - htop
+      - mosh
+      - silversearcher-ag
+      - w3m
+    state: present
+
+  become: true
+  become_user: root
+
+- block:
+  - name: Check fzf installation directory
+    stat:
+      path: ~/.fzf
+    register: fzf_path
+  - name: Install fzf
+    git:
+      repo: https://github.com/junegunn/fzf.git
+      dest: ~/.fzf
+      depth: 1
+      version: 0.21.1
+    when: not fzf_path.stat.exists
+  - name: Setup fzf for users shell
+    command: ~/.fzf/install --all
+    when: not fzf_path.stat.exists
+
+- name: Install ripgrep
+  unarchive:
+    src: https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
+    dest: /usr/bin
+    remote_src: yes
+  become: true
+  become_user: root
+
+- name: Install shellcheck
+  unarchive:
+    src: https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
+    dest: /usr/bin
+    remote_src: yes
+  become: true
+  become_user: root
+

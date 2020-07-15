@@ -1,0 +1,9 @@
+git@github.com:benjaminfjones/benjaminfjones.github.io.git
+git@github.com:benjaminfjones/cortho.git
+git@github.com:benjaminfjones/dotfiles.git
+git@github.com:benjaminfjones/lumberjack.git
+git@github.com:benjaminfjones/match-sticks.git
+git@github.com:benjaminfjones/minsky.git
+git@github.com:benjaminfjones/presburger.git
+git@github.com:benjaminfjones/rust-lists.git
+git@github.com:benjaminfjones/rustlings.git

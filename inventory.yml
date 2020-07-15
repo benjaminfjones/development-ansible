@@ -1,0 +1,7 @@
+all:
+  hosts:
+    hanalei:
+      ansible_port: 22
+      ansible_user: ubuntu
+      ansible_host: 52.13.170.31
+      ansible_ssh_private_key_file: ~/.ssh/hanalei-lightsail.pem

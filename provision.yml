@@ -1,0 +1,15 @@
+---
+# This ansible playbook contains plays to setup a development environment
+
+- hosts: all
+  tasks:
+  - include_tasks: basic.yml
+  - include_tasks: neovim.yml
+  - include_tasks: dotfiles.yml
+  - include_tasks: python.yml
+    tags: python
+  - include_tasks: java.yml
+    tags: java
+  - include_tasks: rust.yml
+    tags: rust
+  - include_tasks: sourcecode.yml

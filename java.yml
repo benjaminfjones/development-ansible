@@ -1,0 +1,12 @@
+# Install Java
+
+- name: Install java jdk11, gradle, checkstyle
+  apt:
+    name:
+      - openjdk-11-jdk
+      - gradle
+      - checkstyle
+    state: present
+
+  become: true
+  become_user: root
