@@ -1,5 +1,22 @@
 # Install basic system tools
 
+# Add source repositories into sources list.
+- name: Add bionic-updates repo
+  apt_repository:
+    repo: deb http://archive.canonical.com/ubuntu bionic-updates main restricted universe multiverse
+    state: present
+  become: true
+  become_user: root
+- name: Add bionic-updates src repo
+  apt_repository:
+    repo: deb-src http://archive.canonical.com/ubuntu bionic-updates main restricted universe multiverse
+    state: present
+  become: true
+  become_user: root
+- name: Update apt cache
+  apt:
+    update_cache: yes
+
 - name: Install basic system tools
   apt:
     name:
