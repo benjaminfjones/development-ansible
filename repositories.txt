@@ -7,3 +7,4 @@ git@github.com:benjaminfjones/minsky.git
 git@github.com:benjaminfjones/presburger.git
 git@github.com:benjaminfjones/rust-lists.git
 git@github.com:benjaminfjones/rustlings.git
+git@github.com:benjaminfjones/stanford_cs110L.git

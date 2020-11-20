@@ -4,9 +4,15 @@
   apt:
     name:
       - python3
-      - python3-pip
       - python3-venv
+      - python3-pip
     state: present
 
   become: true
   become_user: root
+
+- name: Install pyenv
+  git:
+    repo: 'https://github.com/pyenv/pyenv'
+    dest: ~/.pyenv
+    version: v1.2.21

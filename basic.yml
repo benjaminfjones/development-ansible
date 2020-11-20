@@ -1,22 +1,5 @@
 # Install basic system tools
 
-# Add source repositories into sources list.
-- name: Add bionic-updates repo
-  apt_repository:
-    repo: deb http://archive.canonical.com/ubuntu bionic-updates main restricted universe multiverse
-    state: present
-  become: true
-  become_user: root
-- name: Add bionic-updates src repo
-  apt_repository:
-    repo: deb-src http://archive.canonical.com/ubuntu bionic-updates main restricted universe multiverse
-    state: present
-  become: true
-  become_user: root
-- name: Update apt cache
-  apt:
-    update_cache: yes
-
 - name: Install basic system tools
   apt:
     name:
@@ -29,10 +12,10 @@
       - unzip
       - file
       - htop
-      - mosh
       - silversearcher-ag
       - w3m
     state: present
+    update_cache: yes
 
   become: true
   become_user: root
@@ -47,7 +30,7 @@
       repo: https://github.com/junegunn/fzf.git
       dest: ~/.fzf
       depth: 1
-      version: 0.21.1
+      version: 0.24.3
     when: not fzf_path.stat.exists
   - name: Setup fzf for users shell
     command: ~/.fzf/install --all
@@ -69,3 +52,10 @@
   become: true
   become_user: root
 
+- name: Install starship
+  unarchive:
+    src: https://github.com/starship/starship/releases/download/v0.47.0/starship-x86_64-unknown-linux-musl.tar.gz
+    dest: /usr/bin
+    remote_src: yes
+  become: true
+  become_user: root

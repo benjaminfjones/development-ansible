@@ -56,12 +56,3 @@
   shell: ~/.cargo/bin/rustup completions zsh > ~/.zfunc/_rustup
   when: not rustupcomp.stat.exists
   tags: rust
-
-# Install heaptrack for memory profiling
-- name: Install heaptrack
-  apt:
-    name:
-      - heaptrack
-    state: present
-  become: yes
-  become_user: root
