@@ -22,19 +22,20 @@
     dest: ~/src/repositories.txt
     mode: 0644
 
+# TODO: setup ssh keys manually
 # Github credentials
-- name: Create .ssh directory
-  file:
-    path: ~/.ssh
-    state: directory
-    mode: 0755
-- name: Copy github ssh private key
-  copy:
-    src: id_rsa
-    dest: ~/.ssh/id_rsa
-    mode: 0600
-- name: Copy github ssh public key
-  copy:
-    src: id_rsa.pub
-    dest: ~/.ssh/id_rsa.pub
-    mode: 0644
+# - name: Create .ssh directory
+#   file:
+#     path: ~/.ssh
+#     state: directory
+#     mode: 0755
+# - name: Copy github ssh private key
+#   copy:
+#     src: id_rsa
+#     dest: ~/.ssh/id_rsa
+#     mode: 0600
+# - name: Copy github ssh public key
+#   copy:
+#     src: id_rsa.pub
+#     dest: ~/.ssh/id_rsa.pub
+#     mode: 0644
