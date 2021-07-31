@@ -6,7 +6,7 @@ Install ansible:
 ```
 $ python3 -m venv .venv
 $ source .venv/bin/activate
-$ pip install --user ansible ansible-lint
+$ pip install ansible ansible-lint
 ```
 
 ## Inventory
