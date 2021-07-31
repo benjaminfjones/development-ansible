@@ -38,3 +38,7 @@
     repo: 'https://github.com/pyenv/pyenv'
     dest: ~/.pyenv
     version: v1.2.21
+
+- name: Install poetry
+  shell: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | ~/.pyenv/shims/python -
+
