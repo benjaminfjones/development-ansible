@@ -1,0 +1,10 @@
+- name: Download node.js install script
+  shell: curl -sL install-node.now.sh/lts > /tmp/install-node.sh
+
+- name: Install node.js
+  shell: bash /tmp/install-node.sh
+  become: true
+  become_user: root
+
+# install pyright
+# sudo npm i -g pyright

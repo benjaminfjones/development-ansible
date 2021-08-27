@@ -31,17 +31,3 @@
 
   become: true
   become_user: root
-
-- name: Install python neovim plugin
-  pip:
-    name: neovim
-    executable: pip3
-    extra_args: --user
-
-- name: Download node.js install script
-  shell: curl -sL install-node.now.sh/lts > /tmp/install-node.sh
-
-- name: Install node.js
-  shell: bash /tmp/install-node.sh
-  become: true
-  become_user: root
