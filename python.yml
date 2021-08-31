@@ -33,12 +33,50 @@
   become: true
   become_user: root
 
+# Pyenv
+
+- name: Check pyenv directory
+  stat:
+    path: ~/.pyenv
+  register: pyenv_path
+
 - name: Install pyenv
   git:
     repo: 'https://github.com/pyenv/pyenv'
     dest: ~/.pyenv
-    version: v1.2.21
+    version: v2.0.6
+  when: not pyenv_path.stat.exists
 
-- name: Install poetry
-  shell: curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | ~/.pyenv/shims/python -
+- name: Check pyenv python binary
+  stat:
+    path: ~/.pyenv/shims/python
+  register: pyenv_python_path
 
+- name: Install pyenv python v3.9
+  ansible.builtin.command:
+    cmd: ~/.pyenv/bin/pyenv install 3.9.7
+    creates: ~/.pyenv/shims/python
+  when: not pyenv_python_path.stat.exists
+
+- name: Make pyenv python v3.9 globally available
+  ansible.builtin.command:
+    cmd: ~/.pyenv/bin/pyenv global 3.9.7
+
+# Poetry
+
+- name: Check Poetry installation directory
+  stat:
+    path: ~/.poetry/bin/poetry
+  register: poetry_path
+
+- name: Fetch Poetry installer
+  get_url:
+    url: https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py
+    dest: /tmp/install-poetry.py
+  when: not poetry_path.stat.exists
+
+- name: Install Poetry
+  ansible.builtin.command:
+    cmd: ~/.pyenv/shims/python /tmp/install-poetry.py
+    creates: ~/.poetry/bin/poetry
+  when: not poetry_path.stat.exists
