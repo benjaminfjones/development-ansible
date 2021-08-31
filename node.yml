@@ -1,10 +1,36 @@
-- name: Download node.js install script
-  shell: curl -sL install-node.now.sh/lts > /tmp/install-node.sh
+# nodejs
+
+- name: Check node installation directory
+  stat:
+    path: /usr/local/bin/node
+  register: node_path
+
+- name: Fetch nodejs installer
+  get_url:
+    url: https://install-node.vercel.app
+    dest: /tmp/install-node.sh
+  when: not node_path.stat.exists
 
 - name: Install node.js
-  shell: bash /tmp/install-node.sh
+  ansible.builtin.command:
+    cmd: bash /tmp/install-node.sh -y
+    creates: /usr/local/bin/node
+  when: not node_path.stat.exists
   become: true
   become_user: root
 
-# install pyright
-# sudo npm i -g pyright
+
+# Pyright
+
+- name: Check pyright installation directory
+  stat:
+    path: /usr/local/bin/pyright
+  register: pyright_path
+
+- name: Install pyright language server
+  ansible.builtin.command:
+    cmd: /usr/local/bin/npm i -g pyright
+    creates: /usr/local/bin/pyright
+  when: not pyright_path.stat.exists
+  become: true
+  become_user: root
