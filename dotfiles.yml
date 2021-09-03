@@ -10,8 +10,7 @@
     git:
       repo: https://github.com/benjaminfjones/dotfiles
       dest: ~/dotfiles
-      depth: 1
-      version: stable-20200714
+      version: stable-20210903
     when: not dotfiles_path.stat.exists
 
   - name: boot dotfiles
