@@ -43,20 +43,20 @@
   ansible.builtin.shell: >
       nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager && nix-channel --update
   environment:
-    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
+    PATH: '{{ ansible_env.HOME }}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}'
   when: not home_manager_path.stat.exists
 
 - name: Install home-manager
   ansible.builtin.shell: >
       nix-shell '<home-manager>' -A install
   environment:
-    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
-    NIX_PATH: '{{ansible_env.HOME}}/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/{{ansible_env.USER}}/channels'
+    PATH: '{{ ansible_env.HOME }}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}'
+    NIX_PATH: '{{ ansible_env.HOME }}/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/{{ ansible_env.USER }}/channels'
   when: not home_manager_path.stat.exists
 
 - name: Activate home-manager
   ansible.builtin.command: >
       home-manager switch
   environment:
-    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
+    PATH: '{{ ansible_env.HOME }}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}'
   when: true

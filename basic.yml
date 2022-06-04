@@ -20,18 +20,18 @@
   become_user: root
 
 - name: ensure zsh installed in /usr/bin
-  stat:
+  ansible.builtin.stat:
     path: /usr/bin/zsh
   register: zsh_path
 
 - name: set users shell to zsh
-  user:
-    name: '{{ansible_env.USER}}'
+  ansible.builtin.user:
+    name: '{{ ansible_env.USER }}'
     shell: /usr/bin/zsh
   become: true
   become_user: root
   when: zsh_path.stat.exists
 
-# Generate an OpenSSH keypair with the default values (4096 bits, rsa)
-- openssh_keypair:
+- name: Generate ssh keypair (4096 bits, rsa)
+  openssh_keypair:
     path: ~/.ssh/id_ssh_rsa
