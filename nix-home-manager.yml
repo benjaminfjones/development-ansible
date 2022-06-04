@@ -12,11 +12,18 @@
     version: origin/main
   when: not nixfiles_path.stat.exists
 
+- name: Setup $HOME/.config
+  ansible.builtin.file:
+    path: ~/.config
+    state: directory
+    mode: '0755'
+
 - name: Setup link to $HOME/.config/nixpkgs
   ansible.builtin.file:
     src: ~/nixfiles
     dest: ~/.config/nixpkgs
     state: link
+    force: true
 
 - name: Check for Nix install
   ansible.builtin.stat:
@@ -44,6 +51,14 @@
       nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager && nix-channel --update
   environment:
     PATH: '{{ ansible_env.HOME }}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}'
+  when: not home_manager_path.stat.exists
+
+- name: Work around home-mananger file priority conflict
+  ansible.builtin.shell: >
+      nix-env --set-flag priority 0 nix-2.9.0
+  environment:
+    PATH: '{{ ansible_env.HOME }}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ ansible_env.PATH }}'
+    NIX_PATH: '{{ ansible_env.HOME }}/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/{{ ansible_env.USER }}/channels'
   when: not home_manager_path.stat.exists
 
 - name: Install home-manager
