@@ -34,4 +34,4 @@
 
 - name: Generate ssh keypair (4096 bits, rsa)
   openssh_keypair:
-    path: ~/.ssh/id_ssh_rsa
+    path: ~/.ssh/id_rsa
