@@ -1,61 +1,37 @@
+---
 # Install basic system tools
 
 - name: Install basic system tools
-  apt:
+  ansible.builtin.apt:
     name:
       - zsh
       - curl
       - git
       - build-essential
-      - tmux
       - openssh-client
       - unzip
       - file
       - htop
-      - silversearcher-ag
       - w3m
     state: present
-    update_cache: yes
+    update_cache: true
 
   become: true
   become_user: root
 
-- block:
-  - name: Check fzf installation directory
-    stat:
-      path: ~/.fzf
-    register: fzf_path
-  - name: Install fzf
-    git:
-      repo: https://github.com/junegunn/fzf.git
-      dest: ~/.fzf
-      depth: 1
-      version: 0.24.3
-    when: not fzf_path.stat.exists
-  - name: Setup fzf for users shell
-    command: ~/.fzf/install --all
-    when: not fzf_path.stat.exists
+- name: ensure zsh installed in /usr/bin
+  stat:
+    path: /usr/bin/zsh
+  register: zsh_path
 
-- name: Install ripgrep
-  unarchive:
-    src: https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-    dest: /usr/bin
-    remote_src: yes
+- name: set users shell to zsh
+  user:
+    name: '{{ansible_env.USER}}'
+    shell: /usr/bin/zsh
   become: true
   become_user: root
+  when: zsh_path.stat.exists
 
-- name: Install shellcheck
-  unarchive:
-    src: https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
-    dest: /usr/bin
-    remote_src: yes
-  become: true
-  become_user: root
-
-- name: Install starship
-  unarchive:
-    src: https://github.com/starship/starship/releases/download/v0.47.0/starship-x86_64-unknown-linux-musl.tar.gz
-    dest: /usr/bin
-    remote_src: yes
-  become: true
-  become_user: root
+# Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+- openssh_keypair:
+    path: ~/.ssh/id_ssh_rsa

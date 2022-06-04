@@ -1,8 +1,8 @@
 all:
   hosts:
-    hanalei:
+    howland:
       ansible_port: 22
       ansible_user: ubuntu
-      ansible_host: hanalei
+      ansible_host: howland
       ansible_ssh_private_key_file: ~/.ssh/hanalei-lightsail.pem
       ansible_python_interpreter: /usr/bin/python3

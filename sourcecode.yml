@@ -1,41 +1,26 @@
+---
 # Clone all currently active repos
 
 - name: Create src directory
-  file:
+  ansible.builtin.file:
     path: ~/src
     state: directory
     mode: 0755
 
 - name: Copy get_repo script
-  copy:
+  ansible.builtin.copy:
     src: get_repos.sh
     dest: ~/src/get_repos.sh
     mode: 0755
+
 - name: Copy clone_repo script
-  copy:
+  ansible.builtin.copy:
     src: clone_repos.sh
     dest: ~/src/clone_repos.sh
     mode: 0755
+
 - name: Copy repositories index
-  copy:
+  ansible.builtin.copy:
     src: repositories.txt
     dest: ~/src/repositories.txt
     mode: 0644
-
-# TODO: setup ssh keys manually
-# Github credentials
-# - name: Create .ssh directory
-#   file:
-#     path: ~/.ssh
-#     state: directory
-#     mode: 0755
-# - name: Copy github ssh private key
-#   copy:
-#     src: id_rsa
-#     dest: ~/.ssh/id_rsa
-#     mode: 0600
-# - name: Copy github ssh public key
-#   copy:
-#     src: id_rsa.pub
-#     dest: ~/.ssh/id_rsa.pub
-#     mode: 0644

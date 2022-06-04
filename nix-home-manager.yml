@@ -1,0 +1,62 @@
+---
+# Install nix package manager and home-manager
+- name: Check nixfiles repo directory
+  ansible.builtin.stat:
+    path: ~/nixfiles
+  register: nixfiles_path
+
+- name: Clone personal nixfiles repo
+  ansible.builtin.git:
+    repo: https://github.com/benjaminfjones/nixfiles
+    dest: ~/nixfiles
+    version: origin/main
+  when: not nixfiles_path.stat.exists
+
+- name: Setup link to $HOME/.config/nixpkgs
+  ansible.builtin.file:
+    src: ~/nixfiles
+    dest: ~/.config/nixpkgs
+    state: link
+
+- name: Check for Nix install
+  ansible.builtin.stat:
+    path: /nix/store
+  register: nix_store_path
+
+- name: Fetch Nix installer
+  ansible.builtin.get_url:
+    url: https://nixos.org/nix/install
+    dest: /tmp/install_nix.sh
+    mode: 0644
+  when: not nix_store_path.stat.exists
+
+- name: Install Nix
+  ansible.builtin.command: /bin/bash /tmp/install_nix.sh --no-daemon
+  when: not nix_store_path.stat.exists
+
+- name: Check for home-manager
+  ansible.builtin.stat:
+    path: ~/.nix-profile/bin/home-manager
+  register: home_manager_path
+
+- name: Update nix channels
+  ansible.builtin.shell: >
+      nix-channel --add https://github.com/nix-community/home-manager/archive/master.tar.gz home-manager && nix-channel --update
+  environment:
+    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
+  when: not home_manager_path.stat.exists
+
+- name: Install home-manager
+  ansible.builtin.shell: >
+      nix-shell '<home-manager>' -A install
+  environment:
+    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
+    NIX_PATH: '{{ansible_env.HOME}}/.nix-defexpr/channels:/nix/var/nix/profiles/per-user/{{ansible_env.USER}}/channels'
+  when: not home_manager_path.stat.exists
+
+- name: Activate home-manager
+  ansible.builtin.command: >
+      home-manager switch
+  environment:
+    PATH: '{{ansible_env.HOME}}/.nix-profile/bin:/nix/var/nix/profiles/default/bin:{{ansible_env.PATH}}'
+  when: true
