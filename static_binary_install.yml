@@ -1,0 +1,26 @@
+# This is a generic static linux binary installer
+#
+# Use with a loop over dictionaries like:
+#
+# with_items:
+#   - { name: "Ripgrep",
+#       src: "https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz",
+#       archive_path: "ripgrep-13.0.0-x86_64-unknown-linux-musl/rg",
+#       bin_name: "rg" }
+- name: "Static binary install of {{ item.name }}"
+  block:
+    - name: "Fetch and unarchive {{ item.name }}"
+      ansible.builtin.unarchive:
+        src: "{{ item.src }}"
+        dest: /tmp
+        remote_src: true
+    - name: "Install {{ item.name }}"
+      become: true
+      become_user: root
+      ansible.builtin.copy:
+        remote_src: true
+        src: "/tmp/{{ item.archive_path }}"
+        dest: "/usr/local/bin/{{ item.bin_name }}"
+        owner: root
+        group: root
+        mode: u=rwx,g=rx,o=rx

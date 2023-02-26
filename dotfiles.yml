@@ -1,48 +1,44 @@
-# Install dotfiles repo
+- name: Install dotfiles repo
+  block:
+    - name: Clone dotfiles repo
+      ansible.builtin.git:
+        repo: https://github.com/benjaminfjones/dotfiles
+        dest: ~/dotfiles
+        version: stable-20230225
 
-- block:
-  - name: check dotfiles repo directory
-    stat:
-      path: ~/dotfiles
-    register: dotfiles_path
+    - name: Boot dotfiles
+      ansible.builtin.command:
+        cmd: bash boot.sh
+        chdir: ~/dotfiles
+      args:
+        # TODO: have boot.sh create a flag file to check here
+        creates: ~/.config/nvim/init.lua
 
-  - name: clone dotfiles repo
-    git:
-      repo: https://github.com/benjaminfjones/dotfiles
-      dest: ~/dotfiles
-      version: stable-20210903
-    when: not dotfiles_path.stat.exists
+    - name: Copy gitconfig
+      ansible.builtin.copy:
+        src: gitconfig
+        dest: ~/.gitconfig
+        owner: ubuntu
+        group: ubuntu
+        mode: u=rw,g=r,o=r
 
-  - name: boot dotfiles
-    command:
-      cmd: bash boot.sh
-      chdir: ~/dotfiles
-    when: not dotfiles_path.stat.exists
+    - name: Copy zshrc_local
+      ansible.builtin.copy:
+        src: zshrc_local
+        dest: ~/.zshrc_local
+        owner: ubuntu
+        group: ubuntu
+        mode: u=rw,g=r,o=r
 
-  - name: copy gitconfig
-    copy:
-      src: gitconfig
-      dest: ~/.gitconfig
-      owner: ubuntu
-      group: ubuntu
-      mode: 0644
+    - name: Ensure zsh installed in /usr/bin
+      ansible.builtin.stat:
+        path: /usr/bin/zsh
+      register: zsh_path
 
-  - name: copy zshrc_local
-    copy:
-      src: zshrc_local
-      dest: ~/.zshrc_local
-      owner: ubuntu
-      group: ubuntu
-      mode: 0644
-
-  - name: ensure zsh installed in /usr/bin
-    stat:
-      path: /usr/bin/zsh
-    register: zsh_path
-  - name: set users shell to zsh
-    user:
-      name: ubuntu
-      shell: /usr/bin/zsh
-    become: true
-    become_user: root
-    when: zsh_path.stat.exists
+    - name: Set users shell to zsh
+      ansible.builtin.user:
+        name: ubuntu
+        shell: /usr/bin/zsh
+      become: true
+      become_user: root
+      when: zsh_path.stat.exists

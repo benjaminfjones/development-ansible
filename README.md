@@ -43,6 +43,12 @@ $ ansible-lint provision.yml
 ## Provision the hosts in inventory.yml
 
 ```
-$ ANSIBLE_NOCOWS=1 ansible-playbook -i inventory.yml provision.yml
+$ ansible-playbook -i inventory.yml provision.yml
 ...
+```
+
+or just run tasks with a tag:
+
+```
+$ ansible-playbook -i inventory.yml --tags basic provision.yml
 ```

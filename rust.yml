@@ -1,58 +1,42 @@
-# Install rustup and use it to install rust toolchain
+- name: Rust
+  tags:
+    - rust
+  block:
+  - name: Fetch rustup installer
+    ansible.builtin.get_url:
+      url: https://sh.rustup.rs
+      dest: /tmp/install_rustup.sh
+      mode: u=rwx,g=rx,o=rx
 
-- name: Check for rustup install
-  stat:
-    path: ~/.cargo/bin/rustup
-  register: rustup_path
-  tags: rust
+  - name: Install rustup
+    ansible.builtin.command: /bin/bash /tmp/install_rustup.sh -y
+    args:
+      creates: ~/.cargo/bin/rustup
 
-- name: Fetch rustup installer
-  get_url:
-    url: https://sh.rustup.rs
-    dest: /tmp/install_rustup.sh
-  when: not rustup_path.stat.exists
-  tags: rust
+  - name: Install rust components
+    ansible.builtin.command: >
+        ~/.cargo/bin/rustup component add \
+            cargo \
+            clippy \
+            miri \
+            rls \
+            rust \
+            rust-docs \
+            rust-src \
+            rust-analysis \
+            rust-analyzer-preview \
+            rustc \
+            rustfmt
+    args:
+      creates: ~/.cargo/bin/cargo-clippy
 
-- name: Install rustup
-  command: /bin/bash /tmp/install_rustup.sh -y
-  when: not rustup_path.stat.exists
-  tags: rust
-
-- name: Check for rustup components
-  stat:
-    path: ~/.cargo/bin/cargo-clippy
-  register: clippy_path
-  tags: rust
-
-- name: Install rust components
-  command: >
-      ~/.cargo/bin/rustup component add \
-          cargo \
-          clippy \
-          miri \
-          rls \
-          rust \
-          rust-docs \
-          rust-src \
-          rust-analysis \
-          rust-analyzer-preview \
-          rustc \
-          rustfmt
-  when: not clippy_path.stat.exists
-  tags: rust
-
-# Install shell goodies
-- name: Ensure .zfunc dir exists
-  file:
-    path: ~/.zfunc
-    state: directory
-    mode: 0755
-  tags: rust
-- name: Check if zfunc/rustup exists
-  stat:
-    path: ~/.zfunc/_rustup
-  register: rustupcomp
-- name: Install rustup completions
-  shell: ~/.cargo/bin/rustup completions zsh > ~/.zfunc/_rustup
-  when: not rustupcomp.stat.exists
-  tags: rust
+  # Install shell goodies
+  - name: Ensure .zfunc dir exists
+    ansible.builtin.file:
+      path: ~/.zfunc
+      state: directory
+      mode: u=rwx,g=rx,o=rx
+  - name: Install rustup completions
+    ansible.builtin.shell: ~/.cargo/bin/rustup completions zsh > ~/.zfunc/_rustup
+    args:
+      creates: ~/.zfunc/_rustup

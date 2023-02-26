@@ -1,36 +1,32 @@
-# nodejs
+- name: NodeJS
+  tags:
+    - node
+  block:
+  - name: Fetch nodejs installer
+    get_url:
+      url: https://install-node.vercel.app
+      dest: /tmp/install-node.sh
 
-- name: Check node installation directory
-  stat:
-    path: /usr/local/bin/node
-  register: node_path
-
-- name: Fetch nodejs installer
-  get_url:
-    url: https://install-node.vercel.app
-    dest: /tmp/install-node.sh
-  when: not node_path.stat.exists
-
-- name: Install node.js
-  ansible.builtin.command:
-    cmd: bash /tmp/install-node.sh -y
-    creates: /usr/local/bin/node
-  when: not node_path.stat.exists
-  become: true
-  become_user: root
+  - name: Install node.js
+    become: true
+    become_user: root
+    ansible.builtin.command:
+      cmd: bash /tmp/install-node.sh -y
+      creates: /usr/local/bin/node
 
 
+# Update: now installed by nvim-mason
 # Pyright
-
-- name: Check pyright installation directory
-  stat:
-    path: /usr/local/bin/pyright
-  register: pyright_path
-
-- name: Install pyright language server
-  ansible.builtin.command:
-    cmd: /usr/local/bin/npm i -g pyright
-    creates: /usr/local/bin/pyright
-  when: not pyright_path.stat.exists
-  become: true
-  become_user: root
+#
+# - name: Check pyright installation directory
+#   stat:
+#     path: /usr/local/bin/pyright
+#   register: pyright_path
+#
+# - name: Install pyright language server
+#   ansible.builtin.command:
+#     cmd: /usr/local/bin/npm i -g pyright
+#     creates: /usr/local/bin/pyright
+#   when: not pyright_path.stat.exists
+#   become: true
+#   become_user: root

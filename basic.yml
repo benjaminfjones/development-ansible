@@ -1,61 +1,54 @@
-# Install basic system tools
+- name: Basic
+  tags:
+    - basic
+  block:
+  - name: Install basic system tools
+    ansible.builtin.apt:
+      name:
+        - zsh
+        - curl
+        - git
+        - build-essential
+        - tmux
+        - openssh-client
+        - unzip
+        - file
+        - htop
+        - silversearcher-ag
+        - w3m
+        - npm
+      state: present
+      update_cache: true
+    become: true
+    become_user: root
 
-- name: Install basic system tools
-  apt:
-    name:
-      - zsh
-      - curl
-      - git
-      - build-essential
-      - tmux
-      - openssh-client
-      - unzip
-      - file
-      - htop
-      - silversearcher-ag
-      - w3m
-    state: present
-    update_cache: yes
-
-  become: true
-  become_user: root
-
-- block:
-  - name: Check fzf installation directory
-    stat:
-      path: ~/.fzf
-    register: fzf_path
   - name: Install fzf
-    git:
+    ansible.builtin.git:
       repo: https://github.com/junegunn/fzf.git
       dest: ~/.fzf
       depth: 1
       version: 0.24.3
-    when: not fzf_path.stat.exists
   - name: Setup fzf for users shell
-    command: ~/.fzf/install --all
-    when: not fzf_path.stat.exists
+    ansible.builtin.command: ~/.fzf/install --all
+    args:
+      creates: ~/.fzf/bin/fzf
 
-- name: Install ripgrep
-  unarchive:
-    src: https://github.com/BurntSushi/ripgrep/releases/download/12.1.1/ripgrep-12.1.1-x86_64-unknown-linux-musl.tar.gz
-    dest: /usr/bin
-    remote_src: yes
-  become: true
-  become_user: root
-
-- name: Install shellcheck
-  unarchive:
-    src: https://github.com/koalaman/shellcheck/releases/download/stable/shellcheck-stable.linux.x86_64.tar.xz
-    dest: /usr/bin
-    remote_src: yes
-  become: true
-  become_user: root
-
-- name: Install starship
-  unarchive:
-    src: https://github.com/starship/starship/releases/download/v0.47.0/starship-x86_64-unknown-linux-musl.tar.gz
-    dest: /usr/bin
-    remote_src: yes
-  become: true
-  become_user: root
+  - name: "{{ item.name }}"
+    ansible.builtin.include_tasks: static_binary_install.yml
+    with_items:
+      - { name: "Ripgrep",
+          src: "https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz",
+          archive_path: "ripgrep-13.0.0-x86_64-unknown-linux-musl/rg",
+          bin_name: "rg" }
+      - { name: "Starship",
+          src: "https://github.com/starship/starship/releases/download/v1.13.0/starship-x86_64-unknown-linux-musl.tar.gz",
+          archive_path: "starship",
+          bin_name: "starship" }
+      - { name: "Bat",
+          src: "https://github.com/sharkdp/bat/releases/download/v0.22.1/bat-v0.22.1-i686-unknown-linux-musl.tar.gz",
+          archive_path: "bat-v0.22.1-i686-unknown-linux-musl/bat",
+          bin_name: "bat" }
+      - { name: "Exa",
+          src: "https://github.com/ogham/exa/releases/download/v0.10.0/exa-linux-x86_64-v0.10.0.zip",
+          archive_path: "bin/exa",
+          bin_name: "exa" }
