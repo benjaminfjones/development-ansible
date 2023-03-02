@@ -2,31 +2,26 @@
   tags:
     - node
   block:
-  - name: Fetch nodejs installer
-    get_url:
-      url: https://install-node.vercel.app
-      dest: /tmp/install-node.sh
-
-  - name: Install node.js
-    become: true
-    become_user: root
-    ansible.builtin.command:
-      cmd: bash /tmp/install-node.sh -y
-      creates: /usr/local/bin/node
-
-
-# Update: now installed by nvim-mason
-# Pyright
-#
-# - name: Check pyright installation directory
-#   stat:
-#     path: /usr/local/bin/pyright
-#   register: pyright_path
-#
-# - name: Install pyright language server
-#   ansible.builtin.command:
-#     cmd: /usr/local/bin/npm i -g pyright
-#     creates: /usr/local/bin/pyright
-#   when: not pyright_path.stat.exists
-#   become: true
-#   become_user: root
+    - name: Install NVM and NodeJS
+      tags:
+        - node
+      block:
+        - name: Fetch nvm installer
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh
+            dest: /tmp/install-nvm.sh
+            mode: u=rwx,g=rx,o=rx
+        - name: Install nvm to user home
+          ansible.builtin.shell: |
+            /tmp/install-nvm.sh
+            echo 'export NVM_DIR="$HOME/.nvm"' >> ~/.zshrc_local
+            echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"' >> ~/.zshrc_local
+          args:
+            creates: "{{ ansible_env.HOME }}/.nvm/nvm.sh"
+        - name: Install node 16
+          ansible.builtin.shell: |
+            source $HOME/.nvm/nvm.sh
+            nvm install 16
+            touch ~/.installed_node_16
+          args:
+            creates: ~/.installed_node_16

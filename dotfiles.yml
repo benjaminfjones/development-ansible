@@ -1,33 +1,38 @@
 - name: Install dotfiles repo
+  tags:
+    - dotfiles
   block:
     - name: Clone dotfiles repo
       ansible.builtin.git:
         repo: https://github.com/benjaminfjones/dotfiles
         dest: ~/dotfiles
         version: stable-20230225
+      register: dotfiles_clone
+      failed_when:
+        - dotfiles_clone.failed
+        - not 'Local modifications exist in the destination' in dotfiles_clone.msg
 
     - name: Boot dotfiles
       ansible.builtin.command:
         cmd: bash boot.sh
         chdir: ~/dotfiles
       args:
-        # TODO: have boot.sh create a flag file to check here
-        creates: ~/.config/nvim/init.lua
+        creates: ~/.tmux.conf
 
     - name: Copy gitconfig
       ansible.builtin.copy:
         src: gitconfig
         dest: ~/.gitconfig
-        owner: ubuntu
-        group: ubuntu
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_group }}"
         mode: u=rw,g=r,o=r
 
     - name: Copy zshrc_local
       ansible.builtin.copy:
         src: zshrc_local
         dest: ~/.zshrc_local
-        owner: ubuntu
-        group: ubuntu
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_group }}"
         mode: u=rw,g=r,o=r
 
     - name: Ensure zsh installed in /usr/bin
@@ -37,8 +42,8 @@
 
     - name: Set users shell to zsh
       ansible.builtin.user:
-        name: ubuntu
+        name: "{{ ansible_user }}"
         shell: /usr/bin/zsh
       become: true
       become_user: root
-      when: zsh_path.stat.exists
+      when: zsh_path.stat.exists and ansible_facts['distribution'] == "Ubuntu"

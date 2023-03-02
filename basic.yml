@@ -2,53 +2,66 @@
   tags:
     - basic
   block:
-  - name: Install basic system tools
-    ansible.builtin.apt:
-      name:
-        - zsh
-        - curl
-        - git
-        - build-essential
-        - tmux
-        - openssh-client
-        - unzip
-        - file
-        - htop
-        - silversearcher-ag
-        - w3m
-        - npm
-      state: present
-      update_cache: true
-    become: true
-    become_user: root
+    - name: Install basic system tools
+      block:
+        - name: Install basic system tools (Ubuntu)
+          ansible.builtin.apt:
+            name:
+              - zsh
+              - curl
+              - git
+              - build-essential
+              - tmux
+              - openssh-client
+              - unzip
+              - file
+              - htop
+              - silversearcher-ag
+              - w3m
+              - npm
+            state: present
+            update_cache: true
+          become: true
+          become_user: root
+          when: ansible_facts['distribution'] == "Ubuntu"
 
-  - name: Install fzf
-    ansible.builtin.git:
-      repo: https://github.com/junegunn/fzf.git
-      dest: ~/.fzf
-      depth: 1
-      version: 0.24.3
-  - name: Setup fzf for users shell
-    ansible.builtin.command: ~/.fzf/install --all
-    args:
-      creates: ~/.fzf/bin/fzf
+        - name: Install basic system tools (AL2)
+          ansible.builtin.shell: |
+            sudo yum install -y \
+                "@Development tools" \
+                cmake curl tmux htop bzip2 sqlite xz findutils
+            touch ~/.installed_basic_system_tools_al2
+          args:
+            creates: ~/.installed_basic_system_tools_al2
+          when: ansible_facts['distribution'] == "Amazon"
 
-  - name: "{{ item.name }}"
-    ansible.builtin.include_tasks: static_binary_install.yml
-    with_items:
-      - { name: "Ripgrep",
-          src: "https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz",
-          archive_path: "ripgrep-13.0.0-x86_64-unknown-linux-musl/rg",
-          bin_name: "rg" }
-      - { name: "Starship",
-          src: "https://github.com/starship/starship/releases/download/v1.13.0/starship-x86_64-unknown-linux-musl.tar.gz",
-          archive_path: "starship",
-          bin_name: "starship" }
-      - { name: "Bat",
-          src: "https://github.com/sharkdp/bat/releases/download/v0.22.1/bat-v0.22.1-i686-unknown-linux-musl.tar.gz",
-          archive_path: "bat-v0.22.1-i686-unknown-linux-musl/bat",
-          bin_name: "bat" }
-      - { name: "Exa",
-          src: "https://github.com/ogham/exa/releases/download/v0.10.0/exa-linux-x86_64-v0.10.0.zip",
-          archive_path: "bin/exa",
-          bin_name: "exa" }
+    - name: Install fzf
+      ansible.builtin.git:
+        repo: https://github.com/junegunn/fzf.git
+        dest: ~/.fzf
+        depth: 1
+        version: 0.24.3
+    - name: Setup fzf for users shell
+      ansible.builtin.command: ~/.fzf/install --all
+      args:
+        creates: ~/.fzf/bin/fzf
+
+    - name: "{{ item.name }}"
+      ansible.builtin.include_tasks: static_binary_install.yml
+      with_items:
+        - { name: "Ripgrep",
+            src: "https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz",
+            archive_path: "ripgrep-13.0.0-x86_64-unknown-linux-musl/rg",
+            bin_name: "rg" }
+        - { name: "Starship",
+            src: "https://github.com/starship/starship/releases/download/v1.13.0/starship-x86_64-unknown-linux-musl.tar.gz",
+            archive_path: "starship",
+            bin_name: "starship" }
+        - { name: "Bat",
+            src: "https://github.com/sharkdp/bat/releases/download/v0.22.1/bat-v0.22.1-i686-unknown-linux-musl.tar.gz",
+            archive_path: "bat-v0.22.1-i686-unknown-linux-musl/bat",
+            bin_name: "bat" }
+        - { name: "Exa",
+            src: "https://github.com/ogham/exa/releases/download/v0.10.0/exa-linux-x86_64-v0.10.0.zip",
+            archive_path: "bin/exa",
+            bin_name: "exa" }

@@ -1,8 +1,8 @@
 ---
 # This ansible playbook contains plays to setup a development environment
 
-- name: Provision ubuntu hosts
-  hosts: cloud_dev_ubuntu
+- name: Provision AL2 hosts
+  hosts: cloud_dev_al2
   tasks:
     - name: Basic
       ansible.builtin.include_tasks: basic.yml
@@ -10,18 +10,18 @@
         - basic
     - name: Python
       ansible.builtin.include_tasks: python.yml
-    - include_tasks: node.yml
+      tags:
+        - python
+    # TODO: also need npm
+    - name: Node
+      ansible.builtin.include_tasks: node.yml
       tags:
         - node
+    - name: Dotfiles
+      ansible.builtin.include_tasks: dotfiles.yml
+      tags:
+        - dotfiles
     - name: Neovim
       ansible.builtin.include_tasks: neovim.yml
       tags:
         - neovim
-    - name: Dotfiles
-      ansible.builtin.include_tasks: dotfiles.yml
-    - name: Rust
-      ansible.builtin.include_tasks: rust.yml
-      tags:
-        - rust
-    - name: Source code
-      ansible.builtin.include_tasks: sourcecode.yml

@@ -14,7 +14,7 @@
         src: "{{ item.src }}"
         dest: /tmp
         remote_src: true
-    - name: "Install {{ item.name }}"
+    - name: "Install (Ubuntu) {{ item.name }}"
       become: true
       become_user: root
       ansible.builtin.copy:
@@ -24,3 +24,12 @@
         owner: root
         group: root
         mode: u=rwx,g=rx,o=rx
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: "Install (AL2) {{ item.name }}"
+      ansible.builtin.shell: |
+        sudo cp "/tmp/{{ item.archive_path }}" "/usr/local/bin/{{ item.bin_name }}"
+        sudo chmod 0755 "/usr/local/bin/{{ item.bin_name }}"
+        touch ~/".installed_{{ item.bin_name }}_al2"
+      args:
+        creates: "~/.installed_{{ item.bin_name }}_al2"
+      when: ansible_facts['distribution'] == "Amazon"

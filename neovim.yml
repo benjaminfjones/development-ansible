@@ -2,60 +2,92 @@
   tags:
     - neovim
   block:
-  - name: Install neovim system dependencies
-    ansible.builtin.apt:
-      name:
-        - ninja-build
-        - gettext
-        - libtool
-        - libtool-bin
-        - cmake
-        - g++
-        - pkg-config
-        - unzip
-        - curl
-        - doxygen
-        - software-properties-common
-        - python3-dev
-        - python3-setuptools
-        - python3-neovim
-      state: present
-    become: true
-    become_user: root
+    - name: Install neovim build dependencies
+      block:
+        - name: Install neovim build dependencies (Ubuntu)
+          ansible.builtin.apt:
+            name:
+              - ninja-build
+              - gettext
+              - libtool
+              - libtool-bin
+              - cmake
+              - g++
+              - pkg-config
+              - unzip
+              - curl
+              - doxygen
+              - software-properties-common
+              - python3-dev
+              - python3-setuptools
+              - python3-neovim
+            state: present
+          become: true
+          become_user: root
+          when: ansible_facts['distribution'] == "Ubuntu"
 
-  - name: Install Neovim from source
-    block:
-      - name: Ensure src directory exists
-        ansible.builtin.file:
-          path: ~/src
-          state: directory
-          mode: u=rwx,g=rx,o=rx
-        register: src_dir
-      - name: Fetch neovim source
-        ansible.builtin.git:
-          repo: https://github.com/neovim/neovim
-          dest: "{{ src_dir.path }}/neovim"
-          version: stable
-          depth: 1  # make a shallow clone
-        register: neovim_repo
-      - name: Build neovim
-        ansible.builtin.command: make CMAKE_BUILD_TYPE=RelWithDebInfo
-        args:
-          chdir: "{{ src_dir.path }}/neovim"
-          creates: "{{ src_dir.path }}/neovim/build"
-      - name: Install neovim
-        become: true
-        become_user: root
-        ansible.builtin.command: make install
-        args:
-          chdir: "{{ src_dir.path }}/neovim"
-          creates: /usr/local/bin/nvim
+        - name: Install neovim build dependencies (AL2)
+          ansible.builtin.shell: |
+            sudo yum -y install ninja-build libtool cmake3 gcc gcc-c++ make pkgconfig unzip gettext curl
+            touch ~/.installed_neovim_build_dependencies_al2
+          args:
+            creates: ~/.installed_neovim_build_dependencies_al2
+          when: ansible_facts['distribution'] == "Amazon"
+        - name: Setup cmake3 alternatives (AL2)
+          ansible.builtin.shell: |
+            sudo alternatives --install /usr/local/bin/cmake cmake /usr/bin/cmake3 20 \
+              --slave /usr/local/bin/ctest ctest /usr/bin/ctest3 \
+              --slave /usr/local/bin/cpack cpack /usr/bin/cpack3 \
+              --slave /usr/local/bin/ccmake ccmake /usr/bin/ccmake3 \
+              --family cmake
+            touch ~/.installed_cmake3_alternatives_al2
+          args:
+            creates: ~/.installed_cmake3_alternatives_al2
+          when: ansible_facts['distribution'] == "Amazon"
 
-  - name: Clone neovim config repository
-    ansible.builtin.git:
-      repo: https://github.com/benjaminfjones/kickstart.nvim.git
-      dest: ~/.config/nvim
-      version: v0.1.0
 
-  - name: Boot neomvim configuration
-    ansible.builtin.command: /usr/local/bin/nvim +qa
+    - name: Install Neovim from source
+      block:
+        - name: Ensure src directory exists
+          ansible.builtin.file:
+            path: ~/src
+            state: directory
+            mode: u=rwx,g=rx,o=rx
+          register: src_dir
+        - name: Fetch neovim source
+          ansible.builtin.git:
+            repo: https://github.com/neovim/neovim
+            dest: "{{ src_dir.path }}/neovim"
+            version: stable
+            depth: 1  # make a shallow clone
+          register: neovim_repo
+        - name: Build neovim
+          ansible.builtin.command: make CMAKE_BUILD_TYPE=RelWithDebInfo
+          args:
+            chdir: "{{ src_dir.path }}/neovim"
+            creates: "{{ src_dir.path }}/neovim/build"
+        - name: Install neovim
+          block:
+            - name: Install neovim (Ubuntu)
+              become: true
+              become_user: root
+              ansible.builtin.command: make install
+              args:
+                chdir: "{{ src_dir.path }}/neovim"
+                creates: /usr/local/bin/nvim
+              when: ansible_facts['distribution'] == "Ubuntu"
+            - name: Install neovim (AL2)
+              ansible.builtin.command: sudo make install
+              args:
+                chdir: "{{ src_dir.path }}/neovim"
+                creates: /usr/local/bin/nvim
+              when: ansible_facts['distribution'] == "Amazon"
+
+    - name: Clone neovim config repository
+      ansible.builtin.git:
+        repo: https://github.com/benjaminfjones/kickstart.nvim.git
+        dest: ~/.config/nvim
+        version: v0.1.0
+
+    - name: Boot neomvim configuration
+      ansible.builtin.command: /usr/local/bin/nvim +qa
