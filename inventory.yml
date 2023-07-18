@@ -1,8 +1,9 @@
 all:
   hosts:
-    howland:
+    dyson:
       ansible_port: 22
-      ansible_user: ubuntu
-      ansible_host: howland
-      ansible_ssh_private_key_file: ~/.ssh/hanalei-lightsail.pem
+      ansible_user: veil
+      ansible_group: veil
+      ansible_host: 1.2.3.4
+      ansible_ssh_private_key_file: ~/.ssh/id_rsa
       ansible_python_interpreter: /usr/bin/python3
