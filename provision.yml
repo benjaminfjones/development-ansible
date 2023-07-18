@@ -2,7 +2,7 @@
 # This ansible playbook contains plays to setup a development environment
 
 - name: Provision ubuntu hosts
-  hosts: cloud_dev_ubuntu
+  hosts: all
   tasks:
     - name: Basic
       ansible.builtin.include_tasks: basic.yml
