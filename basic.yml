@@ -29,7 +29,10 @@
           ansible.builtin.shell: |
             sudo yum install -y \
                 "@Development tools" \
-                cmake curl tmux htop bzip2 sqlite xz findutils
+                cmake curl tmux htop findutils \
+                gcc make patch zlib-devel bzip2 bzip2-devel \
+                readline-devel sqlite sqlite-devel openssl11-devel \
+                tk-devel libffi-devel xz xz-devel
             touch ~/.installed_basic_system_tools_al2
           args:
             creates: ~/.installed_basic_system_tools_al2
