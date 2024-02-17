@@ -87,7 +87,7 @@
       ansible.builtin.git:
         repo: https://github.com/benjaminfjones/kickstart.nvim.git
         dest: ~/.config/nvim
-        version: v0.1.0
+        version: v0.2.0
 
     - name: Boot neomvim configuration
       ansible.builtin.command: /usr/local/bin/nvim +qa
