@@ -22,6 +22,7 @@
       - liblzma-dev
   become: true
   become_user: root
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Install python3 toolchain
   ansible.builtin.apt:
@@ -32,6 +33,7 @@
     state: present
   become: true
   become_user: root
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 # Pyenv
 
