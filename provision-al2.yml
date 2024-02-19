@@ -12,15 +12,15 @@
       ansible.builtin.include_tasks: python.yml
       tags:
         - python
+    - name: Dotfiles
+      ansible.builtin.include_tasks: dotfiles.yml
+      tags:
+        - dotfiles
     # TODO: also need npm
     - name: Node
       ansible.builtin.include_tasks: node.yml
       tags:
         - node
-    - name: Dotfiles
-      ansible.builtin.include_tasks: dotfiles.yml
-      tags:
-        - dotfiles
     - name: Neovim
       ansible.builtin.include_tasks: neovim.yml
       tags:
