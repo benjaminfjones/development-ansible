@@ -32,7 +32,7 @@
                 cmake curl tmux htop findutils \
                 gcc make patch zlib-devel bzip2 bzip2-devel \
                 readline-devel sqlite sqlite-devel openssl11-devel \
-                tk-devel libffi-devel xz xz-devel
+                tk-devel libffi-devel xz xz-devel libevent-devel
             touch ~/.installed_basic_system_tools_al2
           args:
             creates: ~/.installed_basic_system_tools_al2

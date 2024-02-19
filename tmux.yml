@@ -1,0 +1,18 @@
+- name: "Tmux"
+  block:
+    - name: "Set tmux version"
+      set_fact:
+        tmux_ver: "3.4"
+    - name: "Fetch and unarchive tmux source code"
+      ansible.builtin.unarchive:
+        src: "https://github.com/tmux/tmux/releases/download/{{ tmux_ver }}/tmux-{{ tmux_ver }}.tar.gz"
+        dest: "{{ ansible.USER_HOME }}/src"
+        remote_src: true
+    - name: "Compile tmux {{ tmux_ver }}"
+      ansible.builtin.shell: |
+        ./configure
+        make
+        sudo make install
+      args:
+        chdir: "{{ ansible.USER_HOME }}/src/tmux-{{ tmux_ver }}"
+        creates: /usr/local/bin/tmux
