@@ -25,3 +25,7 @@
       ansible.builtin.include_tasks: neovim.yml
       tags:
         - neovim
+    - name: tmux
+      ansible.builtin.include_tasks: tmux.yml
+      tags:
+        - tmux
