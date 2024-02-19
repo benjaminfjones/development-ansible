@@ -89,5 +89,8 @@
         dest: ~/.config/nvim
         version: v0.2.0
 
-    - name: Boot neomvim configuration
-      ansible.builtin.command: /usr/local/bin/nvim +qa
+    # TODO: this step often gets stuck because plugin bootup requires interaction
+    #   leaving it commented out for now. First time `nvim` is run manually, plugins should
+    #   initialize and build properly.
+    # - name: Boot neomvim configuration
+    #   ansible.builtin.command: /usr/local/bin/nvim +qa
