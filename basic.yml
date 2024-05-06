@@ -36,7 +36,7 @@
             touch ~/.installed_basic_system_tools_al2
           args:
             creates: ~/.installed_basic_system_tools_al2
-          when: ansible_facts['distribution'] == "Amazon"
+          when: ansible_facts["distribution"] == "Amazon"
 
     - name: Install fzf
       ansible.builtin.git:
@@ -49,8 +49,10 @@
       args:
         creates: ~/.fzf/bin/fzf
 
+    # x86_64 static binaries to install
     - name: "{{ item.name }}"
       ansible.builtin.include_tasks: static_binary_install.yml
+      when: ansible_facts["architecture"] == "x86_64"
       with_items:
         - { name: "Ripgrep",
             src: "https://github.com/BurntSushi/ripgrep/releases/download/13.0.0/ripgrep-13.0.0-x86_64-unknown-linux-musl.tar.gz",
@@ -66,5 +68,27 @@
             bin_name: "bat" }
         - { name: "Exa",
             src: "https://github.com/ogham/exa/releases/download/v0.10.0/exa-linux-x86_64-v0.10.0.zip",
+            archive_path: "bin/exa",
+            bin_name: "exa" }
+
+    # aarch64 static binaries to install
+    - name: "{{ item.name }}"
+      ansible.builtin.include_tasks: static_binary_install.yml
+      when: ansible_facts["architecture"] == "aarch64"
+      with_items:
+        - { name: "Ripgrep",
+            src: "https://github.com/BurntSushi/ripgrep/releases/download/14.1.0/ripgrep-14.1.0-aarch64-unknown-linux-gnu.tar.gz",
+            archive_path: "ripgrep-14.1.0-aarch64-unknown-linux-gnu/rg",
+            bin_name: "rg" }
+        - { name: "Starship",
+            src: "https://github.com/starship/starship/releases/download/v1.18.2/starship-aarch64-unknown-linux-musl.tar.gz",
+            archive_path: "starship",
+            bin_name: "starship" }
+        - { name: "Bat",
+            src: "https://github.com/sharkdp/bat/releases/download/v0.24.0/bat-v0.24.0-aarch64-unknown-linux-gnu.tar.gz",
+            archive_path: "bat-v0.24.0-aarch64-unknown-linux-gnu/bat",
+            bin_name: "bat" }
+        - { name: "Exa",
+            src: "https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v0.10.1.zip",
             archive_path: "bin/exa",
             bin_name: "exa" }
