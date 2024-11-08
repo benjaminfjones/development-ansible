@@ -66,10 +66,10 @@
             src: "https://github.com/sharkdp/bat/releases/download/v0.22.1/bat-v0.22.1-i686-unknown-linux-musl.tar.gz",
             archive_path: "bat-v0.22.1-i686-unknown-linux-musl/bat",
             bin_name: "bat" }
-        - { name: "Exa",
-            src: "https://github.com/ogham/exa/releases/download/v0.10.0/exa-linux-x86_64-v0.10.0.zip",
-            archive_path: "bin/exa",
-            bin_name: "exa" }
+        - { name: "Eza",
+            src: "https://github.com/eza-community/eza/releases/download/v0.20.7/eza_x86_64-unknown-linux-musl.tar.gz",
+            archive_path: "eza",
+            bin_name: "eza" }
 
     # aarch64 static binaries to install
     - name: "{{ item.name }}"
@@ -89,6 +89,6 @@
             archive_path: "bat-v0.24.0-aarch64-unknown-linux-gnu/bat",
             bin_name: "bat" }
         - { name: "Exa",
-            src: "https://github.com/ogham/exa/releases/download/v0.10.1/exa-linux-armv7-v0.10.1.zip",
-            archive_path: "bin/exa",
-            bin_name: "exa" }
+            src: "https://github.com/eza-community/eza/releases/download/v0.20.7/eza_aarch64-unknown-linux-gnu.tar.gz",
+            archive_path: "eza",
+            bin_name: "eza" }
