@@ -1,0 +1,20 @@
+- name: "fish"
+  tags:
+    - fish
+  block:
+    - name: "Set fish version"
+      set_fact:
+        fish_ver: "4.0.0"
+    - name: "Fetch and unarchive fish source code"
+      ansible.builtin.unarchive:
+        src: https://github.com/fish-shell/fish-shell/releases/download/{{ fish_ver }}/fish-{{ fish_ver }}.tar.xz
+        dest: "{{ ansible_env.HOME }}/src"
+        remote_src: true
+    - name: "Compile fish {{ fish_ver }}"
+      ansible.builtin.shell: |
+        cmake .
+        make
+        sudo make install
+      args:
+        chdir: "{{ ansible_env.HOME }}/src/fish-{{ fish_ver }}"
+        creates: /usr/local/bin/fish

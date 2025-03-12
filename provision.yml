@@ -17,6 +17,10 @@
       ansible.builtin.include_tasks: neovim.yml
       tags:
         - neovim
+    - name: fish
+      ansible.builtin.include_tasks: fish.yml
+      tags:
+        - fish
     - name: Dotfiles
       ansible.builtin.include_tasks: dotfiles.yml
     - name: Rust
